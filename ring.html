@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Here's your gift bebe</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #BEE4D0;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    
+    .container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 10;
+    }
+    
+    .ring-box {
+      width: 200px;
+      height: 100px;
+      background: linear-gradient(to bottom, #8b4513, #5d2906);
+      border-radius: 10px;
+      position: relative;
+      transform-origin: bottom;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+    
+    .box-top {
+      width: 200px;
+      height: 100px;
+      background: linear-gradient(to bottom, #aa5722, #8b4513);
+      border-radius: 10px 10px 0 0;
+      position: absolute;
+      top: -100px;
+      left: 0;
+      transform-origin: bottom;
+      transform: rotateX(0deg);
+      z-index: 9;
+      box-shadow: inset 0 -5px 10px rgba(0,0,0,0.2);
+    }
+    
+    .box-inner {
+      width: 180px;
+      height: 80px;
+      background: #f8e0e6;
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .ring-holder {
+      width: 60px;
+      height: 20px;
+      background: #e6ccde;
+      border-radius: 30px 30px 0 0;
+      position: relative;
+    }
+    
+    .ring {
+      position: absolute;
+      top: -40px;
+      left: 15px;
+      transform-origin: center bottom;
+      transition: transform 0.5s ease;
+      z-index: 11;
+    }
+    
+    .ring-band {
+      width: 30px;
+      height: 30px;
+      border: 5px solid gold;
+      border-radius: 50%;
+      position: relative;
+    }
+    
+    .diamond {
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-bottom: 18px solid rgba(255, 255, 255, 0.9);
+      position: absolute;
+      top: -20px;
+      left: 8px;
+      transform-origin: center bottom;
+      filter: drop-shadow(0 0 5px rgba(79, 195, 247, 0.8));
+    }
+    
+    .diamond::after {
+      content: '';
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-top: 18px solid rgba(255, 255, 255, 0.9);
+      position: absolute;
+      top: 18px;
+      left: -12px;
+    }
+    
+    .sparkle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 0 3px 1px rgba(255, 255, 255, 0.8);
+    }
+    
+    .big-sparkle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 0 10px 3px rgba(255, 255, 255, 0.9);
+    }
+    
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #ff6b81;
+      transform: rotate(45deg);
+      opacity: 0;
+    }
+    
+    .heart::before, .heart::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #ff6b81;
+      border-radius: 50%;
+    }
+    
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+    
+    .heart::after {
+      top: 0;
+      left: -10px;
+    }
+    
+    .instructions {
+      position: absolute;
+      bottom: 20px;
+      text-align: center;
+      color: #553c9a;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      background-color: rgba(255, 255, 255, 0.7);
+      padding: 8px 16px;
+      border-radius: 20px;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="ring-box">
+      <div class="box-inner">
+        <div class="ring-holder">
+          <div class="ring">
+            <div class="ring-band"></div>
+            <div class="diamond"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="box-top"></div>
+  </div>
+
+  <div class="instructions">Click to open the box, then click again to zoom the ring!</div>
+
+  <script>
+    // Create hearts
+    function createHearts() {
+      const container = document.body;
+      for (let i = 0; i < 20; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        
+        // Random positioning
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.top = Math.random() * 100 + 'vh';
+        heart.style.transform = `rotate(45deg) scale(${Math.random() * 0.5 + 0.5})`;
+        
+        container.appendChild(heart);
+        
+        // Animate heart
+        animateHeart(heart);
+      }
+    }
+    
+    function animateHeart(heart) {
+      const duration = Math.random() * 5 + 3;
+      const delay = Math.random() * 5;
+      
+      gsap.set(heart, { opacity: 0 });
+      
+      gsap.to(heart, {
+        y: -300 - Math.random() * 200,
+        x: Math.random() * 100 - 50,
+        opacity: 0.7,
+        duration: duration,
+        delay: delay,
+        ease: "sine.inOut",
+        onComplete: () => {
+          heart.style.top = (100 + Math.random() * 20) + 'vh';
+          heart.style.left = Math.random() * 100 + 'vw';
+          animateHeart(heart);
+        }
+      });
+    }
+    
+    // Create diamond sparkles
+    function createSparkles() {
+      const diamond = document.querySelector('.diamond');
+      
+      for (let i = 0; i < 5; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.classList.add('sparkle');
+        
+        // Position around the diamond
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * 15 + 5;
+        
+        sparkle.style.left = Math.cos(angle) * distance + 12 + 'px';
+        sparkle.style.top = Math.sin(angle) * distance + 8 + 'px';
+        
+        diamond.appendChild(sparkle);
+        
+        // Animate sparkle
+        animateSparkle(sparkle);
+      }
+    }
+    
+    function animateSparkle(sparkle) {
+      const duration = Math.random() * 1 + 0.5;
+      
+      gsap.to(sparkle, {
+        opacity: Math.random() * 0.7 + 0.3,
+        scale: Math.random() * 1.5 + 0.5,
+        duration: duration,
+        yoyo: true,
+        repeat: -1,
+        ease: "sine.inOut",
+        delay: Math.random() * 1
+      });
+    }
+    
+    // Box animation
+    let isOpen = false;
+    let isRingZoomed = false;
+    const ring = document.querySelector('.ring');
+    
+    document.body.addEventListener('click', () => {
+      if (!isOpen) {
+        openBox();
+      } else if (!isRingZoomed) {
+        zoomRing();
+        isRingZoomed = true;
+      } else {
+        resetRing();
+        isRingZoomed = false;
+      }
+    });
+    
+    function openBox() {
+      gsap.to('.box-top', {
+        rotateX: -180,
+        duration: 1.5,
+        ease: "back.out(1.2)",
+        onComplete: () => { isOpen = true; }
+      });
+      
+      // Lift ring up when box opens
+      gsap.to('.ring', {
+        y: -20,
+        duration: 1.5,
+        delay: 0.7,
+        ease: "elastic.out(1, 0.3)"
+      });
+      
+      // Rotate diamond for sparkling effect
+      gsap.to('.diamond', {
+        rotateY: 360,
+        duration: 2,
+        delay: 1,
+        ease: "power1.inOut"
+      });
+    }
+    
+    function closeBox() {
+      gsap.to('.ring', {
+        y: 0,
+        duration: 0.5,
+        ease: "power1.inOut",
+        onComplete: () => {
+          gsap.to('.box-top', {
+            rotateX: 0,
+            duration: 1.2,
+            ease: "back.out(1.2)",
+            onComplete: () => { isOpen = false; }
+          });
+        }
+      });
+    }
+    
+    function zoomRing() {
+      // Move ring to center of screen
+      const ringRect = ring.getBoundingClientRect();
+      const centerX = window.innerWidth / 2 - ringRect.left - ringRect.width / 2;
+      const centerY = window.innerHeight / 2 - ringRect.top - ringRect.height / 2;
+      
+      // Create big sparkles
+      createBigSparkles();
+      
+      // Animate the zoom effect
+      gsap.to('.ring', {
+        x: centerX,
+        y: centerY,
+        scale: 8,
+        duration: 1.5,
+        ease: "power2.out",
+        onUpdate: function() {
+          // Update diamond rotation during zoom
+          gsap.to('.diamond', {
+            rotateY: '+=20',
+            duration: 0.1
+          });
+        }
+      });
+      
+      // Make the diamond sparkle more
+      gsap.to('.diamond', {
+        filter: 'drop-shadow(0 0 20px rgba(79, 195, 247, 0.9))',
+        duration: 1
+      });
+      
+      // Hide instructions during zoom
+      gsap.to('.instructions', {
+        opacity: 0,
+        duration: 0.5
+      });
+    }
+    
+    function resetRing() {
+      gsap.to('.ring', {
+        x: 0,
+        y: -20,
+        scale: 1,
+        duration: 1,
+        ease: "back.out(1.2)"
+      });
+      
+      gsap.to('.diamond', {
+        filter: 'drop-shadow(0 0 5px rgba(79, 195, 247, 0.8))',
+        duration: 0.5
+      });
+      
+      // Show instructions again
+      gsap.to('.instructions', {
+        opacity: 1,
+        duration: 0.5,
+        delay: 0.5
+      });
+    }
+    
+    function createBigSparkles() {
+      for (let i = 0; i < 30; i++) {
+        setTimeout(() => {
+          const sparkle = document.createElement('div');
+          sparkle.classList.add('big-sparkle');
+          
+          // Position randomly around the screen
+          sparkle.style.left = Math.random() * 100 + 'vw';
+          sparkle.style.top = Math.random() * 100 + 'vh';
+          
+          document.body.appendChild(sparkle);
+          
+          // Animate and remove after animation
+          gsap.to(sparkle, {
+            scale: 3,
+            opacity: 0,
+            duration: 1.5,
+            delay: Math.random() * 0.5,
+            onComplete: () => sparkle.remove()
+          });
+        }, i * 50);
+      }
+    }
+    
+    // Initialize
+    window.onload = () => {
+      createHearts();
+      createSparkles();
+      
+      // Diamond continuous sparkle
+      gsap.to('.diamond', {
+        rotateY: 180,
+        duration: 5,
+        repeat: -1,
+        yoyo: true,
+        ease: "none"
+      });
+      
+      // Make sure the box-top is properly positioned from the start
+      gsap.set('.box-top', { 
+        rotateX: 0,
+        top: 0
+      });
+    };
+  </script>
+</body>
+</html>
